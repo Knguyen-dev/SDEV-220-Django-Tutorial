@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+# For Heroku
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,13 +28,12 @@ SECRET_KEY = 'django-insecure-k7c9t1_^$gnii&f#$s!ps7v1dtj3e$06f^qlxbmp4o+yzo@4&n
 # SECURITY WARNING: don't run with debug turned on in production!
 
 # When DEBUG=True and ALLOWED_HOSTS is empty, host is valiated against local when we deploy. So change it to pythonanywhere since that's where we're going to deploy later
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", ".pythonanywhere.com"]
+ALLOWED_HOSTS = ["127.0.0.1", ".herokuapp.com"]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'blog',
     'django.contrib.admin',
@@ -50,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Heroku
+	'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -80,8 +84,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # Heroku
+        'USER': 'name',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -129,3 +140,5 @@ STATIC_ROOT = BASE_DIR / 'static'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/'
